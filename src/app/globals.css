@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
+@theme {
+  --color-nf-red: #e50914;
+  --color-nf-dark: #141414;
+  --color-nf-card: #181818;
+  --color-nf-gray: #808080;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: #000;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #e50914;
+  color: #fff;
+}
+
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .text-shadow-hero {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
+  }
+  .bg-hero-fade {
+    background: linear-gradient(
+        to top,
+        #000 0%,
+        rgba(0, 0, 0, 0.85) 12%,
+        rgba(0, 0, 0, 0.25) 45%,
+        rgba(0, 0, 0, 0.55) 100%
+      ),
+      linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.95) 0%,
+        rgba(0, 0, 0, 0.55) 40%,
+        transparent 70%
+      );
+  }
+  .bg-card-fade {
+    background: linear-gradient(
+      to top,
+      #181818 0%,
+      rgba(24, 24, 24, 0.92) 55%,
+      rgba(24, 24, 24, 0) 100%
+    );
+  }
+}
+
+@keyframes nf-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: nf-fade-in 0.5s ease-out both;
+}
+
+@keyframes nf-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: nf-pulse 2s ease-in-out infinite;
 }
