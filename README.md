@@ -143,6 +143,41 @@ src/
 scripts/                   # Catalog fetcher, episode enricher, seed CLI
 ```
 
+## Deploy to Vercel
+
+Vercel functions cannot reach a database on your laptop, so use a hosted MongoDB — **MongoDB Atlas** (free M0 tier is enough).
+
+1. **Create an Atlas cluster** at <https://cloud.mongodb.com> (M0 free).
+2. **Create a database user** (Database Access) with a strong password.
+3. **Allow network access**: add `0.0.0.0/0` under Network Access. Vercel uses dynamic egress IPs; tighter allowlists require Vercel Secure Compute or Atlas Private Endpoints (paid).
+4. **Copy the connection string** (Drivers → Node.js), e.g.
+   `mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`
+5. **Seed Atlas from your machine** — put the Atlas URI in `.env.local` and run:
+
+   ```bash
+   # .env.local
+   MONGODB_URI=mongodb+srv://...
+   MONGODB_DB=netflix
+   AUTH_SECRET=<long-random-string>
+
+   npm run seed
+   ```
+
+   The seed script loads `.env.local`. Seeding before deploying is recommended; the app can also auto-seed an empty database on first request, but parallel cold starts may race.
+
+6. **Push to GitHub and import the repo** at <https://vercel.com/new>. Framework preset: Next.js. No custom build settings are needed.
+7. **Add environment variables** in Vercel → Project → Settings → Environment Variables (Production + Preview):
+
+   | Key | Value |
+   | --- | --- |
+   | `MONGODB_URI` | Atlas SRV connection string (include the database name or set `MONGODB_DB`) |
+   | `MONGODB_DB` | `netflix` |
+   | `AUTH_SECRET` | a long random secret, e.g. `openssl rand -base64 32` |
+
+8. **Deploy.** All data-backed routes are dynamic, so the production build does not require a database connection. After deployment, log in with `demo@netflix.dev` / `demo1234`.
+
+Optional: place the Vercel function region near your Atlas region to reduce query latency.
+
 ## Notes & limitations
 
 - This is a demo, not production-hardened. Before deploying, add rate limiting, CSRF protection, email verification, password reset, and rotate `AUTH_SECRET`.
